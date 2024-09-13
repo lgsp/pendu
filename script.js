@@ -1,38 +1,38 @@
 const words = {
-    general: [
-        {fr: "ETRE", en: "to be"},
-        {fr: "AVOIR", en: "to have"},
-        {fr: "FAIRE", en: "to do"},
-        {fr: "DIRE", en: "to say"},
-        {fr: "ALLER", en: "to go"}
+    travail: [
+        {fr: "BUREAU", en: "office"},
+        {fr: "REUNION", en: "meeting"},
+        {fr: "ORDINATEUR", en: "computer"},
+        {fr: "COLLEGUE", en: "colleague"},
+        {fr: "PROJET", en: "project"}
     ],
-    animaux: [
-        {fr: "CHIEN", en: "dog"},
-        {fr: "CHAT", en: "cat"},
-        {fr: "OISEAU", en: "bird"},
-        {fr: "POISSON", en: "fish"},
-        {fr: "CHEVAL", en: "horse"}
+    maison: [
+        {fr: "CUISINE", en: "kitchen"},
+        {fr: "SALON", en: "living room"},
+        {fr: "CHAMBRE", en: "bedroom"},
+        {fr: "JARDIN", en: "garden"},
+        {fr: "GARAGE", en: "garage"}
     ],
-    nourriture: [
-        {fr: "PAIN", en: "bread"},
-        {fr: "FROMAGE", en: "cheese"},
-        {fr: "POMME", en: "apple"},
+    loisir: [
+        {fr: "CINEMA", en: "cinema"},
+        {fr: "LECTURE", en: "reading"},
+        {fr: "SPORT", en: "sport"},
+        {fr: "MUSIQUE", en: "music"},
+        {fr: "VOYAGE", en: "travel"}
+    ],
+    alimentation: [
+        {fr: "LEGUME", en: "vegetable"},
+        {fr: "FRUIT", en: "fruit"},
         {fr: "VIANDE", en: "meat"},
-        {fr: "EAU", en: "water"}
+        {fr: "POISSON", en: "fish"},
+        {fr: "DESSERT", en: "dessert"}
     ],
-    couleurs: [
-        {fr: "ROUGE", en: "red"},
-        {fr: "BLEU", en: "blue"},
-        {fr: "VERT", en: "green"},
-        {fr: "JAUNE", en: "yellow"},
-        {fr: "NOIR", en: "black"}
-    ],
-    famille: [
-        {fr: "MERE", en: "mother"},
-        {fr: "PERE", en: "father"},
-        {fr: "FRERE", en: "brother"},
-        {fr: "SŒUR", en: "sister"},
-        {fr: "ENFANT", en: "child"}
+    voyage: [
+        {fr: "AVION", en: "plane"},
+        {fr: "HOTEL", en: "hotel"},
+        {fr: "PLAGE", en: "beach"},
+        {fr: "PASSEPORT", en: "passport"},
+        {fr: "VALISE", en: "suitcase"}
     ]
 };
 
@@ -117,13 +117,13 @@ function initializeGame(selectedCategory, selectedDifficulty) {
     guessedWord = Array(currentWord.fr.length).fill("_");
     
     switch(difficulty) {
-        case "easy":
+        case "facile":
             remainingLives = currentWord.fr.length * 2;
             break;
-        case "medium":
+        case "moyen":
             remainingLives = Math.ceil(currentWord.fr.length * 1.5);
             break;
-        case "hard":
+        case "difficile":
             remainingLives = currentWord.fr.length;
             break;
     }
@@ -140,52 +140,34 @@ function initializeGame(selectedCategory, selectedDifficulty) {
 
 function createLetterButtons() {
     lettersElement.innerHTML = "";
-    const vowels = ['A', 'E', 'I', 'O', 'U', 'Y'];
-    const consonants = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Z'];
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     
-    // Créer une ligne pour les voyelles
-    const vowelRow = document.createElement('div');
-    vowelRow.className = 'letter-row';
-    vowels.forEach(letter => {
-        const button = createLetterButton(letter);
-        vowelRow.appendChild(button);
-    });
-    lettersElement.appendChild(vowelRow);
-    
-    // Créer 4 lignes de 5 consonnes
-    for (let i = 0; i < 4; i++) {
-        const consonantRow = document.createElement('div');
-        consonantRow.className = 'letter-row';
-        for (let j = 0; j < 5; j++) {
-            const index = i * 5 + j;
-            if (index < consonants.length) {
-                const button = createLetterButton(consonants[index]);
-                consonantRow.appendChild(button);
+    for (let i = 0; i < 2; i++) {
+        const row = document.createElement('div');
+        row.className = 'letter-row';
+        for (let j = 0; j < 13; j++) {
+            const index = i * 13 + j;
+            if (index < letters.length) {
+                const button = document.createElement("button");
+                button.textContent = letters[index];
+                button.addEventListener("click", () => guessLetter(letters[index], button));
+                row.appendChild(button);
             }
         }
-        lettersElement.appendChild(consonantRow);
+        lettersElement.appendChild(row);
     }
 }
 
-function createLetterButton(letter) {
-    const button = document.createElement("button");
-    button.textContent = letter;
-    button.addEventListener("click", () => guessLetter(letter, button));
-    return button;
-}
-
 function guessLetter(letter, button) {
-    if (remainingLives > 0 && guessedWord.includes("_") && !button.disabled) {
-        button.disabled = true; // Désactive le bouton après le clic
+    if (remainingLives > 0 && guessedWord.includes("_") && !button.classList.contains("guessed")) {
+        button.classList.add("guessed");
         if (currentWord.fr.includes(letter)) {
             updateGuessedWord(letter);
-            button.classList.add("correct");
             button.style.backgroundColor = "#28a745"; // Vert pour les lettres correctes
         } else {
             remainingLives--;
             livesElement.textContent = remainingLives;
-            updateHangman();
-            button.classList.add("incorrect");
+            hangmanElement.textContent = hangmanStages[hangmanStages.length - 1 - remainingLives];
             button.style.backgroundColor = "#dc3545"; // Rouge pour les lettres incorrectes
         }
         
@@ -193,19 +175,13 @@ function guessLetter(letter, button) {
     }
 }
 
-
 function updateGuessedWord(letter) {
-    const normalizedWord = normalizeString(currentWord.fr);
-    for (let i = 0; i < normalizedWord.length; i++) {
-        if (normalizedWord[i] === letter) {
-            guessedWord[i] = currentWord.fr[i]; // Afficher en majuscules
+    for (let i = 0; i < currentWord.fr.length; i++) {
+        if (currentWord.fr[i] === letter) {
+            guessedWord[i] = letter;
         }
     }
     wordElement.textContent = guessedWord.join(" ");
-}
-
-function normalizeString(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); // Retire les accents et met en majuscules
 }
 
 function checkGameStatus() {
@@ -225,7 +201,6 @@ function showFullWordAndTranslation(result) {
     translationElement.classList.add(result);
 }
 
-// Écouteurs d'événements pour les catégories et les niveaux de difficulté
 document.querySelectorAll(".category").forEach(button => {
     button.addEventListener("click", () => {
         document.querySelector(".category.active").classList.remove("active");
@@ -246,5 +221,4 @@ restartButton.addEventListener("click", () => {
     initializeGame(category, difficulty);
 });
 
-// Initialisation du jeu
-initializeGame("general", "easy");
+initializeGame("travail", "facile");
