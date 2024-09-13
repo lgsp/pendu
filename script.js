@@ -175,20 +175,24 @@ function createLetterButton(letter) {
 }
 
 function guessLetter(letter, button) {
-    if (remainingLives > 0 && guessedWord.includes("_") && !button.classList.contains("correct") && !button.classList.contains("incorrect")) {
-        if (normalizeString(currentWord.fr).includes(letter)) {
+    if (remainingLives > 0 && guessedWord.includes("_") && !button.disabled) {
+        button.disabled = true; // Désactive le bouton après le clic
+        if (currentWord.fr.includes(letter)) {
             updateGuessedWord(letter);
             button.classList.add("correct");
+            button.style.backgroundColor = "#28a745"; // Vert pour les lettres correctes
         } else {
             remainingLives--;
             livesElement.textContent = remainingLives;
             updateHangman();
             button.classList.add("incorrect");
+            button.style.backgroundColor = "#dc3545"; // Rouge pour les lettres incorrectes
         }
         
         checkGameStatus();
     }
 }
+
 
 function updateGuessedWord(letter) {
     const normalizedWord = normalizeString(currentWord.fr);

@@ -127,3 +127,17 @@ h1 {
     border: 1px solid #dee2e6;
     background-color: #f8f9fa;
 }
+
+#letters button:disabled {
+    opacity: 1; /* Garde l'opacité à 100% même quand le bouton est désactivé */
+}
+
+#letters button.correct {
+    background-color: #28a745 !important;
+    color: white;
+}
+
+#letters button.incorrect {
+    background-color: #dc3545 !important;
+    color: white;
+}
