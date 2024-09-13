@@ -1,38 +1,38 @@
 const words = {
     general: [
-        {fr: "être", en: "to be"},
-        {fr: "avoir", en: "to have"},
-        {fr: "faire", en: "to do"},
-        {fr: "dire", en: "to say"},
-        {fr: "aller", en: "to go"}
+        {fr: "ETRE", en: "to be"},
+        {fr: "AVOIR", en: "to have"},
+        {fr: "FAIRE", en: "to do"},
+        {fr: "DIRE", en: "to say"},
+        {fr: "ALLER", en: "to go"}
     ],
     animaux: [
-        {fr: "chien", en: "dog"},
-        {fr: "chat", en: "cat"},
-        {fr: "oiseau", en: "bird"},
-        {fr: "poisson", en: "fish"},
-        {fr: "cheval", en: "horse"}
+        {fr: "CHIEN", en: "dog"},
+        {fr: "CHAT", en: "cat"},
+        {fr: "OISEAU", en: "bird"},
+        {fr: "POISSON", en: "fish"},
+        {fr: "CHEVAL", en: "horse"}
     ],
     nourriture: [
-        {fr: "pain", en: "bread"},
-        {fr: "fromage", en: "cheese"},
-        {fr: "pomme", en: "apple"},
-        {fr: "viande", en: "meat"},
-        {fr: "eau", en: "water"}
+        {fr: "PAIN", en: "bread"},
+        {fr: "FROMAGE", en: "cheese"},
+        {fr: "POMME", en: "apple"},
+        {fr: "VIANDE", en: "meat"},
+        {fr: "EAU", en: "water"}
     ],
     couleurs: [
-        {fr: "rouge", en: "red"},
-        {fr: "bleu", en: "blue"},
-        {fr: "vert", en: "green"},
-        {fr: "jaune", en: "yellow"},
-        {fr: "noir", en: "black"}
+        {fr: "ROUGE", en: "red"},
+        {fr: "BLEU", en: "blue"},
+        {fr: "VERT", en: "green"},
+        {fr: "JAUNE", en: "yellow"},
+        {fr: "NOIR", en: "black"}
     ],
     famille: [
-        {fr: "mère", en: "mother"},
-        {fr: "père", en: "father"},
-        {fr: "frère", en: "brother"},
-        {fr: "sœur", en: "sister"},
-        {fr: "enfant", en: "child"}
+        {fr: "MERE", en: "mother"},
+        {fr: "PERE", en: "father"},
+        {fr: "FRERE", en: "brother"},
+        {fr: "SŒUR", en: "sister"},
+        {fr: "ENFANT", en: "child"}
     ]
 };
 
@@ -138,10 +138,6 @@ function initializeGame(selectedCategory, selectedDifficulty) {
     createLetterButtons();
 }
 
-
-
-// ... (le reste du code reste inchangé jusqu'à la fonction createLetterButtons)
-
 function createLetterButtons() {
     lettersElement.innerHTML = "";
     const vowels = ['A', 'E', 'I', 'O', 'U', 'Y'];
@@ -180,7 +176,7 @@ function createLetterButton(letter) {
 
 function guessLetter(letter, button) {
     if (remainingLives > 0 && guessedWord.includes("_") && !button.classList.contains("correct") && !button.classList.contains("incorrect")) {
-        if (currentWord.fr.toLowerCase().includes(letter.toLowerCase())) {
+        if (normalizeString(currentWord.fr).includes(letter)) {
             updateGuessedWord(letter);
             button.classList.add("correct");
         } else {
@@ -194,20 +190,18 @@ function guessLetter(letter, button) {
     }
 }
 
-function updateHangman() {
-    const hangmanIndex = hangmanStages.length - 1 - remainingLives;
-    hangmanElement.textContent = hangmanStages[hangmanIndex];
-}
-
-// ... (le reste du code reste inchangé)
-
 function updateGuessedWord(letter) {
-    for (let i = 0; i < currentWord.fr.length; i++) {
-        if (currentWord.fr[i].toLowerCase() === letter.toLowerCase()) {
-            guessedWord[i] = currentWord.fr[i];
+    const normalizedWord = normalizeString(currentWord.fr);
+    for (let i = 0; i < normalizedWord.length; i++) {
+        if (normalizedWord[i] === letter) {
+            guessedWord[i] = currentWord.fr[i]; // Afficher en majuscules
         }
     }
     wordElement.textContent = guessedWord.join(" ");
+}
+
+function normalizeString(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); // Retire les accents et met en majuscules
 }
 
 function checkGameStatus() {
@@ -227,6 +221,7 @@ function showFullWordAndTranslation(result) {
     translationElement.classList.add(result);
 }
 
+// Écouteurs d'événements pour les catégories et les niveaux de difficulté
 document.querySelectorAll(".category").forEach(button => {
     button.addEventListener("click", () => {
         document.querySelector(".category.active").classList.remove("active");
@@ -247,4 +242,5 @@ restartButton.addEventListener("click", () => {
     initializeGame(category, difficulty);
 });
 
+// Initialisation du jeu
 initializeGame("general", "easy");
