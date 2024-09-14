@@ -1,11 +1,53 @@
 const words = {
-    voyage: ["AVION", "VALISE", "PLAGE", "HOTEL", "PASSEPORT"],
-    travail: ["BUREAU", "REUNION", "ORDINATEUR", "COLLEGUE", "PROJET"],
-    sante: ["HOPITAL", "MEDECIN", "MEDICAMENT", "PATIENT", "INFIRMIER"],
-    maison: ["CUISINE", "SALON", "CHAMBRE", "JARDIN", "GARAGE"],
-    loisir: ["CINEMA", "LECTURE", "SPORT", "MUSIQUE", "VOYAGE"],
-    famille: ["PARENTS", "ENFANTS", "FRERE", "SŒUR", "COUSIN"],
-    alimentation: ["LEGUME", "FRUIT", "VIANDE", "POISSON", "DESSERT"]
+    voyage: [
+        {fr: "AVION", en: "plane"},
+        {fr: "VALISE", en: "suitcase"},
+        {fr: "PLAGE", en: "beach"},
+        {fr: "HOTEL", en: "hotel"},
+        {fr: "PASSEPORT", en: "passport"}
+    ],
+    travail: [
+        {fr: "BUREAU", en: "office"},
+        {fr: "REUNION", en: "meeting"},
+        {fr: "ORDINATEUR", en: "computer"},
+        {fr: "COLLEGUE", en: "colleague"},
+        {fr: "PROJET", en: "project"}
+    ],
+    sante: [
+        {fr: "HOPITAL", en: "hospital"},
+        {fr: "MEDECIN", en: "doctor"},
+        {fr: "MEDICAMENT", en: "medicine"},
+        {fr: "PATIENT", en: "patient"},
+        {fr: "INFIRMIER", en: "nurse"}
+    ],
+    maison: [
+        {fr: "CUISINE", en: "kitchen"},
+        {fr: "SALON", en: "living room"},
+        {fr: "CHAMBRE", en: "bedroom"},
+        {fr: "JARDIN", en: "garden"},
+        {fr: "GARAGE", en: "garage"}
+    ],
+    loisir: [
+        {fr: "CINEMA", en: "cinema"},
+        {fr: "LECTURE", en: "reading"},
+        {fr: "SPORT", en: "sport"},
+        {fr: "MUSIQUE", en: "music"},
+        {fr: "VOYAGE", en: "travel"}
+    ],
+    famille: [
+        {fr: "PARENTS", en: "parents"},
+        {fr: "ENFANTS", en: "children"},
+        {fr: "FRERE", en: "brother"},
+        {fr: "SŒUR", en: "sister"},
+        {fr: "COUSIN", en: "cousin"}
+    ],
+    alimentation: [
+        {fr: "LEGUME", en: "vegetable"},
+        {fr: "FRUIT", en: "fruit"},
+        {fr: "VIANDE", en: "meat"},
+        {fr: "POISSON", en: "fish"},
+        {fr: "DESSERT", en: "dessert"}
+    ]
 };
 
 const hangmanStages = [
@@ -71,6 +113,7 @@ let currentWord;
 let guessedWord;
 let remainingLives;
 let category;
+let difficulty;
 
 const wordElement = document.getElementById("word");
 const hangmanElement = document.getElementById("hangman");
@@ -78,15 +121,33 @@ const vowelsElement = document.getElementById("vowels");
 const consonants1Element = document.getElementById("consonants1");
 const consonants2Element = document.getElementById("consonants2");
 const restartButton = document.getElementById("restart");
+const resultElement = document.getElementById("result");
+const translationElement = document.getElementById("translation");
 
-function initializeGame(selectedCategory) {
+function initializeGame(selectedCategory, selectedDifficulty) {
     category = selectedCategory;
+    difficulty = selectedDifficulty;
     currentWord = words[category][Math.floor(Math.random() * words[category].length)];
-    guessedWord = Array(currentWord.length).fill("_");
-    remainingLives = 6;
+    guessedWord = Array(currentWord.fr.length).fill("_");
+    
+    switch(difficulty) {
+        case "facile":
+            remainingLives = currentWord.fr.length * 2;
+            break;
+        case "moyen":
+            remainingLives = Math.ceil(currentWord.fr.length * 1.5);
+            break;
+        case "difficile":
+            remainingLives = currentWord.fr.length;
+            break;
+    }
     
     wordElement.textContent = guessedWord.join(" ");
     hangmanElement.textContent = hangmanStages[0];
+    resultElement.textContent = "";
+    translationElement.textContent = "";
+    resultElement.className = "";
+    translationElement.className = "";
     
     createLetterButtons();
 }
@@ -123,7 +184,7 @@ function createLetterButton(letter) {
 
 function guessLetter(letter, button) {
     if (!button.classList.contains("correct") && !button.classList.contains("incorrect")) {
-        if (currentWord.includes(letter)) {
+        if (currentWord.fr.includes(letter)) {
             updateGuessedWord(letter);
             button.classList.add("correct");
         } else {
@@ -137,8 +198,8 @@ function guessLetter(letter, button) {
 }
 
 function updateGuessedWord(letter) {
-    for (let i = 0; i < currentWord.length; i++) {
-        if (currentWord[i] === letter) {
+    for (let i = 0; i < currentWord.fr.length; i++) {
+        if (currentWord.fr[i] === letter) {
             guessedWord[i] = letter;
         }
     }
@@ -146,26 +207,50 @@ function updateGuessedWord(letter) {
 }
 
 function updateHangman() {
-    hangmanElement.textContent = hangmanStages[6 - remainingLives];
+    hangmanElement.textContent = hangmanStages[hangmanStages.length - 1 - remainingLives];
 }
 
 function checkGameStatus() {
     if (!guessedWord.includes("_")) {
-        alert("Félicitations ! Vous avez gagné !");
+        showResult("win");
     } else if (remainingLives === 0) {
-        alert("Dommage ! Vous avez perdu. Le mot était : " + currentWord);
+        showResult("lose");
     }
+}
+
+function showResult(status) {
+    if (status === "win") {
+        resultElement.textContent = "Félicitations ! Vous avez gagné !";
+        resultElement.className = "win";
+    } else {
+        resultElement.textContent = "Dommage ! Vous avez perdu.";
+        resultElement.className = "lose";
+    }
+    translationElement.textContent = `Le mot était : ${currentWord.fr} (${currentWord.en})`;
+    translationElement.className = status;
 }
 
 document.querySelectorAll(".category").forEach(button => {
     button.addEventListener("click", () => {
-        initializeGame(button.dataset.category);
+        document.querySelector(".category.active")?.classList.remove("active");
+        button.classList.add("active");
+        initializeGame(button.dataset.category, difficulty);
+    });
+});
+
+document.querySelectorAll(".difficulty-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        document.querySelector(".difficulty-btn.active")?.classList.remove("active");
+        button.classList.add("active");
+        difficulty = button.dataset.difficulty;
     });
 });
 
 restartButton.addEventListener("click", () => {
-    initializeGame(category);
+    initializeGame(category, difficulty);
 });
 
-// Initialisation du jeu avec la catégorie "voyage" par défaut
-initializeGame("voyage");
+// Initialisation du jeu avec la catégorie "voyage" et la difficulté "facile" par défaut
+initializeGame("voyage", "facile");
+document.querySelector(".category[data-category='voyage']").classList.add("active");
+document.querySelector(".difficulty-btn[data-difficulty='facile']").classList.add("active");
