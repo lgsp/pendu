@@ -8,42 +8,38 @@ h1 {
     color: #333;
 }
 
-#categories, #difficulty {
+#categories {
     margin-bottom: 20px;
 }
 
-.category, .difficulty-btn {
+.category {
     margin: 5px;
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    transition: all 0.15s ease-in-out;
 }
 
-.category:hover, .difficulty-btn:hover {
-    background-color: #e9ecef;
-}
-
-.category.active, .difficulty-btn.active {
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
+#game-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
 }
 
 #hangman {
-    font-size: 24px;
-    margin-bottom: 20px;
     font-family: monospace;
     white-space: pre;
+    text-align: left;
+    font-size: 20px;
+    line-height: 1.2;
 }
 
 #word {
     font-size: 36px;
-    margin-bottom: 20px;
     letter-spacing: 10px;
+}
+
+.letter-row {
+    margin: 10px 0;
 }
 
 #letters button {
@@ -53,7 +49,7 @@ h1 {
     cursor: pointer;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 5px;
     border: 1px solid #dee2e6;
     background-color: #f8f9fa;
 }
@@ -68,76 +64,9 @@ h1 {
     color: white;
 }
 
-#lives {
-    margin-top: 20px;
-    font-size: 18px;
-}
-
-#message {
-    margin-top: 20px;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-#fullWord, #translation {
-    margin-top: 10px;
-    font-size: 24px;
-}
-
-.win {
-    color: #28a745;
-}
-
-.lose {
-    color: #dc3545;
-}
-
 #restart {
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 18px;
     cursor: pointer;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    transition: background-color 0.15s ease-in-out;
-}
-
-#restart:hover {
-    background-color: #218838;
-}
-
-#letters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-#letters button {
-    margin: 5px;
-    padding: 10px;
-    font-size: 18px;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid #dee2e6;
-    background-color: #f8f9fa;
-}
-
-#letters button.correct {
-    background-color: #28a745 !important;
-    color: white;
-}
-
-#letters button.incorrect {
-    background-color: #dc3545 !important;
-    color: white;
-}
-
-#letters button:disabled {
-    opacity: 1; /* Garde l'opacité à 100% même quand le bouton est désactivé */
 }

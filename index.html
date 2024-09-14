@@ -10,27 +10,26 @@
     <h1>Jeu du Pendu</h1>
     
     <div id="categories">
-        <button class="category active" data-category="general">Général</button>
-        <button class="category" data-category="animaux">Animaux</button>
-        <button class="category" data-category="nourriture">Nourriture</button>
-        <button class="category" data-category="couleurs">Couleurs</button>
+        <button class="category" data-category="voyage">Voyage</button>
+        <button class="category" data-category="travail">Travail</button>
+        <button class="category" data-category="sante">Santé</button>
+        <button class="category" data-category="maison">Maison</button>
+        <button class="category" data-category="loisir">Loisir</button>
         <button class="category" data-category="famille">Famille</button>
+        <button class="category" data-category="alimentation">Alimentation</button>
     </div>
 
-    <div id="difficulty">
-        <button class="difficulty-btn active" data-difficulty="easy">Facile</button>
-        <button class="difficulty-btn" data-difficulty="medium">Moyen</button>
-        <button class="difficulty-btn" data-difficulty="hard">Difficile</button>
+    <div id="game-container">
+        <pre id="hangman"></pre>
+        <div id="word-container">
+            <div id="word"></div>
+        </div>
     </div>
 
-    <div id="game">
-        <div id="hangman"></div>
-        <div id="word"></div>
-        <div id="letters"></div>
-        <div id="lives">Vies restantes : <span id="remainingLives"></span></div>
-        <div id="message"></div>
-        <div id="fullWord"></div>
-        <div id="translation"></div>
+    <div id="letters">
+        <div id="vowels" class="letter-row"></div>
+        <div id="consonants1" class="letter-row"></div>
+        <div id="consonants2" class="letter-row"></div>
     </div>
 
     <button id="restart">Nouvelle partie</button>

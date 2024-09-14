@@ -1,39 +1,11 @@
 const words = {
-    travail: [
-        {fr: "BUREAU", en: "office"},
-        {fr: "REUNION", en: "meeting"},
-        {fr: "ORDINATEUR", en: "computer"},
-        {fr: "COLLEGUE", en: "colleague"},
-        {fr: "PROJET", en: "project"}
-    ],
-    maison: [
-        {fr: "CUISINE", en: "kitchen"},
-        {fr: "SALON", en: "living room"},
-        {fr: "CHAMBRE", en: "bedroom"},
-        {fr: "JARDIN", en: "garden"},
-        {fr: "GARAGE", en: "garage"}
-    ],
-    loisir: [
-        {fr: "CINEMA", en: "cinema"},
-        {fr: "LECTURE", en: "reading"},
-        {fr: "SPORT", en: "sport"},
-        {fr: "MUSIQUE", en: "music"},
-        {fr: "VOYAGE", en: "travel"}
-    ],
-    alimentation: [
-        {fr: "LEGUME", en: "vegetable"},
-        {fr: "FRUIT", en: "fruit"},
-        {fr: "VIANDE", en: "meat"},
-        {fr: "POISSON", en: "fish"},
-        {fr: "DESSERT", en: "dessert"}
-    ],
-    voyage: [
-        {fr: "AVION", en: "plane"},
-        {fr: "HOTEL", en: "hotel"},
-        {fr: "PLAGE", en: "beach"},
-        {fr: "PASSEPORT", en: "passport"},
-        {fr: "VALISE", en: "suitcase"}
-    ]
+    voyage: ["AVION", "VALISE", "PLAGE", "HOTEL", "PASSEPORT"],
+    travail: ["BUREAU", "REUNION", "ORDINATEUR", "COLLEGUE", "PROJET"],
+    sante: ["HOPITAL", "MEDECIN", "MEDICAMENT", "PATIENT", "INFIRMIER"],
+    maison: ["CUISINE", "SALON", "CHAMBRE", "JARDIN", "GARAGE"],
+    loisir: ["CINEMA", "LECTURE", "SPORT", "MUSIQUE", "VOYAGE"],
+    famille: ["PARENTS", "ENFANTS", "FRERE", "SŒUR", "COUSIN"],
+    alimentation: ["LEGUME", "FRUIT", "VIANDE", "POISSON", "DESSERT"]
 };
 
 const hangmanStages = [
@@ -99,76 +71,65 @@ let currentWord;
 let guessedWord;
 let remainingLives;
 let category;
-let difficulty;
 
 const wordElement = document.getElementById("word");
-const lettersElement = document.getElementById("letters");
-const livesElement = document.getElementById("remainingLives");
-const messageElement = document.getElementById("message");
-const fullWordElement = document.getElementById("fullWord");
-const translationElement = document.getElementById("translation");
-const restartButton = document.getElementById("restart");
 const hangmanElement = document.getElementById("hangman");
+const vowelsElement = document.getElementById("vowels");
+const consonants1Element = document.getElementById("consonants1");
+const consonants2Element = document.getElementById("consonants2");
+const restartButton = document.getElementById("restart");
 
-function initializeGame(selectedCategory, selectedDifficulty) {
+function initializeGame(selectedCategory) {
     category = selectedCategory;
-    difficulty = selectedDifficulty;
     currentWord = words[category][Math.floor(Math.random() * words[category].length)];
-    guessedWord = Array(currentWord.fr.length).fill("_");
-    
-    switch(difficulty) {
-        case "facile":
-            remainingLives = currentWord.fr.length * 2;
-            break;
-        case "moyen":
-            remainingLives = Math.ceil(currentWord.fr.length * 1.5);
-            break;
-        case "difficile":
-            remainingLives = currentWord.fr.length;
-            break;
-    }
+    guessedWord = Array(currentWord.length).fill("_");
+    remainingLives = 6;
     
     wordElement.textContent = guessedWord.join(" ");
-    livesElement.textContent = remainingLives;
-    messageElement.textContent = "";
-    fullWordElement.textContent = "";
-    translationElement.textContent = "";
     hangmanElement.textContent = hangmanStages[0];
     
     createLetterButtons();
 }
 
 function createLetterButtons() {
-    lettersElement.innerHTML = "";
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const vowels = ['A', 'E', 'I', 'O', 'U', 'Y'];
+    const consonants = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Z'];
     
-    for (let i = 0; i < 2; i++) {
-        const row = document.createElement('div');
-        row.className = 'letter-row';
-        for (let j = 0; j < 13; j++) {
-            const index = i * 13 + j;
-            if (index < letters.length) {
-                const button = document.createElement("button");
-                button.textContent = letters[index];
-                button.addEventListener("click", () => guessLetter(letters[index], button));
-                row.appendChild(button);
-            }
+    vowelsElement.innerHTML = "";
+    consonants1Element.innerHTML = "";
+    consonants2Element.innerHTML = "";
+
+    vowels.forEach(letter => {
+        const button = createLetterButton(letter);
+        vowelsElement.appendChild(button);
+    });
+
+    consonants.forEach((letter, index) => {
+        const button = createLetterButton(letter);
+        if (index < 10) {
+            consonants1Element.appendChild(button);
+        } else {
+            consonants2Element.appendChild(button);
         }
-        lettersElement.appendChild(row);
-    }
+    });
+}
+
+function createLetterButton(letter) {
+    const button = document.createElement("button");
+    button.textContent = letter;
+    button.addEventListener("click", () => guessLetter(letter, button));
+    return button;
 }
 
 function guessLetter(letter, button) {
-    if (remainingLives > 0 && guessedWord.includes("_") && !button.classList.contains("guessed")) {
-        button.classList.add("guessed");
-        if (currentWord.fr.includes(letter)) {
+    if (!button.classList.contains("correct") && !button.classList.contains("incorrect")) {
+        if (currentWord.includes(letter)) {
             updateGuessedWord(letter);
-            button.style.backgroundColor = "#28a745"; // Vert pour les lettres correctes
+            button.classList.add("correct");
         } else {
             remainingLives--;
-            livesElement.textContent = remainingLives;
-            hangmanElement.textContent = hangmanStages[hangmanStages.length - 1 - remainingLives];
-            button.style.backgroundColor = "#dc3545"; // Rouge pour les lettres incorrectes
+            updateHangman();
+            button.classList.add("incorrect");
         }
         
         checkGameStatus();
@@ -176,49 +137,35 @@ function guessLetter(letter, button) {
 }
 
 function updateGuessedWord(letter) {
-    for (let i = 0; i < currentWord.fr.length; i++) {
-        if (currentWord.fr[i] === letter) {
+    for (let i = 0; i < currentWord.length; i++) {
+        if (currentWord[i] === letter) {
             guessedWord[i] = letter;
         }
     }
     wordElement.textContent = guessedWord.join(" ");
 }
 
-function checkGameStatus() {
-    if (!guessedWord.includes("_")) {
-        messageElement.textContent = "Félicitations ! Vous avez gagné !";
-        showFullWordAndTranslation("win");
-    } else if (remainingLives === 0) {
-        messageElement.textContent = "Dommage ! Vous avez perdu.";
-        showFullWordAndTranslation("lose");
-    }
+function updateHangman() {
+    hangmanElement.textContent = hangmanStages[6 - remainingLives];
 }
 
-function showFullWordAndTranslation(result) {
-    fullWordElement.textContent = `Le mot était : ${currentWord.fr}`;
-    translationElement.textContent = `Traduction : ${currentWord.en}`;
-    fullWordElement.classList.add(result);
-    translationElement.classList.add(result);
+function checkGameStatus() {
+    if (!guessedWord.includes("_")) {
+        alert("Félicitations ! Vous avez gagné !");
+    } else if (remainingLives === 0) {
+        alert("Dommage ! Vous avez perdu. Le mot était : " + currentWord);
+    }
 }
 
 document.querySelectorAll(".category").forEach(button => {
     button.addEventListener("click", () => {
-        document.querySelector(".category.active").classList.remove("active");
-        button.classList.add("active");
-        initializeGame(button.dataset.category, difficulty);
-    });
-});
-
-document.querySelectorAll(".difficulty-btn").forEach(button => {
-    button.addEventListener("click", () => {
-        document.querySelector(".difficulty-btn.active").classList.remove("active");
-        button.classList.add("active");
-        initializeGame(category, button.dataset.difficulty);
+        initializeGame(button.dataset.category);
     });
 });
 
 restartButton.addEventListener("click", () => {
-    initializeGame(category, difficulty);
+    initializeGame(category);
 });
 
-initializeGame("travail", "facile");
+// Initialisation du jeu avec la catégorie "voyage" par défaut
+initializeGame("voyage");
